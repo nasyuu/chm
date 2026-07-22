@@ -2,8 +2,10 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from subprocess import CompletedProcess
+from unittest import mock
 
-from chm_agent.converter import ConversionError, convert
+from chm_agent.converter import ConversionError, _extract, convert
 
 
 class ConverterTest(unittest.TestCase):
@@ -67,6 +69,64 @@ class ConverterTest(unittest.TestCase):
             output.mkdir()
             with self.assertRaises(ConversionError):
                 convert(source, output)
+
+    def test_prefers_7z_on_windows(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source, output = root / "manual.chm", root / "extracted"
+            source.write_bytes(b"chm")
+            output.mkdir()
+
+            def run(command, **kwargs):
+                (output / "index.html").write_text("<p>安装文档正文</p>", encoding="utf-8")
+                return CompletedProcess(command, 0, "", "")
+
+            with (
+                mock.patch("chm_agent.converter._is_windows", return_value=True),
+                mock.patch("chm_agent.converter._find_7z", return_value=r"C:\Program Files\7-Zip\7z.exe"),
+                mock.patch("chm_agent.converter._find_hh") as find_hh,
+                mock.patch("chm_agent.converter.subprocess.run", side_effect=run) as subprocess_run,
+            ):
+                result = _extract(source, output)
+
+            self.assertEqual(result, output)
+            self.assertEqual(subprocess_run.call_args.args[0][0], r"C:\Program Files\7-Zip\7z.exe")
+            self.assertIn("x", subprocess_run.call_args.args[0])
+            find_hh.assert_not_called()
+
+    def test_falls_back_to_hh_on_windows(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source, output = root / "manual.chm", root / "extracted"
+            source.write_bytes(b"chm")
+            output.mkdir()
+
+            def run(command, **kwargs):
+                (output / "index.htm").write_text("<p>安装文档正文</p>", encoding="utf-8")
+                return CompletedProcess(command, 0, "", "")
+
+            with (
+                mock.patch("chm_agent.converter._is_windows", return_value=True),
+                mock.patch("chm_agent.converter._find_7z", return_value=None),
+                mock.patch("chm_agent.converter._find_hh", return_value=r"C:\Windows\hh.exe"),
+                mock.patch("chm_agent.converter.subprocess.run", side_effect=run) as subprocess_run,
+            ):
+                _extract(source, output)
+
+            self.assertEqual(
+                subprocess_run.call_args.args[0],
+                [r"C:\Windows\hh.exe", "-decompile", str(output), str(source)],
+            )
+
+    def test_rejects_chm_extraction_outside_windows(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source, output = root / "manual.chm", root / "extracted"
+            source.write_bytes(b"chm")
+            output.mkdir()
+            with mock.patch("chm_agent.converter._is_windows", return_value=False):
+                with self.assertRaisesRegex(ConversionError, "仅支持 Windows"):
+                    _extract(source, output)
 
 
 if __name__ == "__main__":

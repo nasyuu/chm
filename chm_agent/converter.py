@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -198,6 +199,52 @@ def _content_root(root: Path) -> Path:
     return root
 
 
+def _is_windows() -> bool:
+    return os.name == "nt"
+
+
+def _find_7z() -> str | None:
+    for name in ("7z.exe", "7z"):
+        executable = shutil.which(name)
+        if executable:
+            return executable
+
+    seen: set[str] = set()
+    for variable in ("ProgramFiles", "ProgramW6432", "ProgramFiles(x86)"):
+        root = os.environ.get(variable)
+        if not root or root.lower() in seen:
+            continue
+        seen.add(root.lower())
+        candidate = Path(root) / "7-Zip" / "7z.exe"
+        if candidate.is_file():
+            return str(candidate)
+    return None
+
+
+def _find_hh() -> str | None:
+    executable = shutil.which("hh.exe") or shutil.which("hh")
+    if executable:
+        return executable
+    windows_root = os.environ.get("SystemRoot") or os.environ.get("WINDIR")
+    if windows_root:
+        candidate = Path(windows_root) / "hh.exe"
+        if candidate.is_file():
+            return str(candidate)
+    return None
+
+
+def _run_extractor(command: list[str], name: str) -> None:
+    completed = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        errors="replace",
+    )
+    if completed.returncode != 0:
+        detail = (completed.stderr or completed.stdout).strip() or f"退出码 {completed.returncode}"
+        raise ConversionError(f"{name} 解包失败：{detail}")
+
+
 def _extract(source: Path, destination: Path) -> Path:
     if source.is_dir():
         return _content_root(source)
@@ -205,26 +252,22 @@ def _extract(source: Path, destination: Path) -> Path:
         raise ConversionError(f"找不到输入：{source}")
     if source.suffix.lower() != ".chm":
         raise ConversionError("输入应为 .chm 文件或已解包目录")
+    if not _is_windows():
+        raise ConversionError("CHM 文件解包仅支持 Windows；也可以传入已经解包的目录")
 
-    candidates = [
-        ("7zz", lambda exe: [exe, "x", "-y", f"-o{destination}", str(source)]),
-        ("7z", lambda exe: [exe, "x", "-y", f"-o{destination}", str(source)]),
-        ("extract_chmLib", lambda exe: [exe, str(source), str(destination)]),
-        ("unar", lambda exe: [exe, "-f", "-o", str(destination), str(source)]),
-    ]
-    for name, command in candidates:
-        executable = shutil.which(name)
-        if not executable:
-            continue
-        completed = subprocess.run(command(executable), capture_output=True, text=True)
-        if completed.returncode == 0:
-            return _content_root(destination)
-        detail = (completed.stderr or completed.stdout).strip()
-        raise ConversionError(f"{name} 解包失败：{detail}")
-    raise ConversionError(
-        "未找到 CHM 解包器。macOS 可执行 `brew install sevenzip`，"
-        "Ubuntu/Debian 可执行 `apt install p7zip-full`；也可以先手工解包后传入目录。"
-    )
+    seven_zip = _find_7z()
+    if seven_zip:
+        _run_extractor([seven_zip, "x", "-y", f"-o{destination}", str(source)], "7-Zip")
+    else:
+        html_help = _find_hh()
+        if not html_help:
+            raise ConversionError("未找到 7z.exe，也无法找到 Windows 系统自带的 hh.exe")
+        _run_extractor([html_help, "-decompile", str(destination), str(source)], "hh.exe")
+
+    root = _content_root(destination)
+    if not any(path.is_file() and path.suffix.lower() in HTML_SUFFIXES for path in root.rglob("*")):
+        raise ConversionError("解包命令已结束，但没有找到 HTML 页面")
+    return root
 
 
 def _toc(root: Path) -> tuple[list[str], dict[str, str]]:

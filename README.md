@@ -12,21 +12,25 @@
 
 ## 使用
 
-CHM 解包需要系统中安装 `7zz`、`7z`、`extract_chmLib` 或 `unar` 之一。macOS 推荐：
+本工具面向 Windows。解包时优先使用 7-Zip；程序会依次检查：
 
-```bash
-brew install sevenzip
-```
+- PATH 中的 `7z.exe`
+- `%ProgramFiles%\7-Zip\7z.exe`
+- `%ProgramW6432%\7-Zip\7z.exe`
+- `%ProgramFiles(x86)%\7-Zip\7z.exe`
+
+如果没有安装 7-Zip，程序会自动使用 Windows 系统自带的 `%SystemRoot%\hh.exe`
+执行 `-decompile`。不需要单独安装其他 CHM 解包工具。
 
 转换文档：
 
-```bash
+```powershell
 uv run chm-agent path/to/product.chm -o product-docs
 ```
 
 也可以直接转换一个已经解包、包含 HTML 的目录：
 
-```bash
+```powershell
 uv run chm-agent path/to/extracted-chm -o product-docs
 ```
 
@@ -41,10 +45,10 @@ uv run chm-agent path/to/extracted-chm -o product-docs
 项目提供了面向复杂安装分支的 Prompt，包括场景地图、局点 Runbook、安装前检查、
 文档审计和故障定位，参见 [`prompts/installation-prompts.md`](prompts/installation-prompts.md)。
 
-## 无安装运行
+## 直接运行
 
 项目本身只使用 Python 标准库。Python 3.9+ 可直接运行：
 
-```bash
-python3 main.py path/to/product.chm -o product-docs
+```powershell
+py main.py path/to/product.chm -o product-docs
 ```
