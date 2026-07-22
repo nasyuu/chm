@@ -1,0 +1,51 @@
+[
+  {
+    "id": "physical-new",
+    "title": "物理机全新安装",
+    "when": {"installation_nature": "new", "deployment_carrier": "physical"},
+    "required_fields": ["topology", "hardware_provider", "os_family", "cpu_architecture", "data_platform", "database", "network_mode", "ip_stack", "optional_modules"],
+    "steps": [
+      "select-scenario", "plan-installation", "check-install-limits", "check-physical-hardware",
+      "prepare-software-physical", "configure-scene-package-physical", "prepare-gkit-physical",
+      "prepare-external-fi", "prepare-built-in-fi", "prepare-mysql-common", "prepare-mysql-no-ssl", "prepare-mysql-ssl", "prepare-panwei",
+      "prepare-physical-os", "install-management-plane-physical", "install-fi-service",
+      "install-data-plane-physical", "install-campaign", "install-datacube-design",
+      "install-intent-model", "install-marketing-assistant", "install-assets",
+      "post-install-physical", "verify-installation"
+    ]
+  },
+  {
+    "id": "virtual-new",
+    "title": "虚拟机全新安装",
+    "when": {"installation_nature": "new", "deployment_carrier": "virtual"},
+    "required_fields": ["topology", "hardware_provider", "os_family", "cpu_architecture", "data_platform", "database", "network_mode", "ip_stack", "optional_modules"],
+    "steps": [
+      "select-scenario", "plan-installation", "check-install-limits", "check-virtual-resources",
+      "prepare-software-virtual", "configure-scene-package-virtual", "prepare-gkit-virtual",
+      "prepare-external-fi", "prepare-mysql-common", "prepare-mysql-no-ssl", "prepare-mysql-ssl", "prepare-panwei", "prepare-virtual-os",
+      "install-management-plane-virtual", "install-data-plane-virtual", "install-campaign",
+      "install-datacube-design", "install-assets", "post-install-virtual", "verify-installation"
+    ]
+  },
+  {
+    "id": "datacube-add-decision",
+    "title": "Smart DataCube 追加部署 Smart Decision",
+    "when": {"installation_nature": "add_on", "base_environment": "smart_datacube"},
+    "required_fields": ["deployment_carrier", "topology", "os_family", "cpu_architecture", "data_platform", "optional_modules"],
+    "steps": ["audit-existing-environment", "prepare-datacube-add-decision", "deploy-decision-on-existing", "post-add-on", "verify-add-on"]
+  },
+  {
+    "id": "campaign-add-decision",
+    "title": "Campaign 追加部署 Smart Decision",
+    "when": {"installation_nature": "add_on", "base_environment": "campaign"},
+    "required_fields": ["deployment_carrier", "os_family", "cpu_architecture", "data_platform", "optional_modules"],
+    "steps": ["audit-existing-environment", "prepare-campaign-add-decision", "deploy-decision-on-existing", "post-add-on", "verify-add-on"]
+  },
+  {
+    "id": "decision-add-campaign",
+    "title": "Smart Decision 追加部署 Campaign",
+    "when": {"installation_nature": "add_on", "base_environment": "smart_decision"},
+    "required_fields": ["deployment_carrier", "os_family", "cpu_architecture", "data_platform"],
+    "steps": ["audit-existing-environment", "prepare-decision-add-campaign", "deploy-campaign-on-existing", "post-add-on", "verify-add-on"]
+  }
+]

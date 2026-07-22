@@ -1,4 +1,4 @@
-# CHM Agent Docs
+# CHM Agent 文档工具
 
 把体量很大的 CHM 产品文档转换为一套 Agent 可以直接全文检索、按需读取和引用的 Markdown 知识库。
 
@@ -40,10 +40,54 @@ uv run chm-agent path/to/extracted-chm -o product-docs
 
 默认每个分片最多 20,000 字符。可以用 `--max-chars 12000` 调整；输出目录已存在时，只有显式传入 `--force` 才会重建。
 
-## 安装文档分析 Prompt
+## 安装文档分析提示词
 
-项目提供了面向复杂安装分支的 Prompt，包括场景地图、局点 Runbook、安装前检查、
+项目提供了面向复杂安装分支的提示词，包括场景地图、局点安装执行手册、安装前检查、
 文档审计和故障定位，参见 [`prompts/installation-prompts.md`](prompts/installation-prompts.md)。
+
+## 场景化安装技能
+
+[`skills/plan-product-installation`](skills/plan-product-installation/SKILL.md) 用于根据物理机、
+虚拟机、全新安装或追加部署等指定场景生成带文档依据的安装执行手册。使用示例：
+
+```text
+使用 $plan-product-installation 为 Smart Decision 生成物理机全新安装方案。
+```
+
+该技能会先确认会改变安装路径的场景条件，再读取对应分支，避免混用物理机、虚拟机、
+全新安装和追加部署步骤。
+
+## 安装场景模型
+
+`installation-models/<产品>/<版本>/` 将场景轴、组合约束、原子步骤、主路线和文档证据
+作为版本化资产保存。当前包含 Smart Decision 7.3.0 的第一版模型。
+
+查看支持的场景字段和路线：
+
+```powershell
+uv run chm-agent scenarios installation-models/smart-decision/7.3.0
+```
+
+检查模型结构以及所有文档来源：
+
+```powershell
+uv run chm-agent validate-model installation-models/smart-decision/7.3.0 `
+  --knowledge-base smart-decision-7.3.0-agent-docs
+```
+
+编译物理机全新安装执行手册：
+
+```powershell
+uv run chm-agent plan installation-models/smart-decision/7.3.0 `
+  --set installation_nature=new `
+  --set deployment_carrier=physical `
+  --set topology=standard `
+  --set data_platform=external_fi `
+  --set data_platform_access=admin
+```
+
+信息不足时输出稳定主流程、条件步骤和阻断项；组合违反产品约束时返回错误，避免 Agent
+混合不兼容的安装分支。完整场景档案也可以通过 `--profile site-profile.json` 传入。
 
 ## 直接运行
 

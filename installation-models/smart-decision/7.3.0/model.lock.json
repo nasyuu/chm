@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "product": "Smart Decision",
+  "version": "7.3.0",
+  "source_chm": {
+    "name": "Smart Decision 7.3.0 产品文档(华为工程师版) 01.chm",
+    "sha256": "f24363e35f0a16a84e0bfe11ef95ce4dfc5901ffcb7753f6888134fb95bb2077"
+  },
+  "knowledge_base": {
+    "format": "chm-agent-docs/v1",
+    "pages": 11201,
+    "chunks": 11222
+  },
+  "compiler": {
+    "package": "chm",
+    "version": "0.2.0",
+    "model_schema": 1
+  },
+  "model_status": "draft-reviewed-by-agent",
+  "notes": "约束和原子步骤已绑定文档来源，投入现场使用前仍需产品交付专家审核。"
+}

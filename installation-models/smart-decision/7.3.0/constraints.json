@@ -1,0 +1,58 @@
+[
+  {
+    "id": "built-in-fi-physical-only",
+    "when": {"data_platform": "built_in_fi"},
+    "require": {"deployment_carrier": "physical"},
+    "message": "内置 FI 只支持物理机场景，不支持虚拟机场景",
+    "sources": [{"file": "docs/0237-安装场景说明-61880ce1.md", "heading": "FusionInsight Hadoop集成场景介绍"}]
+  },
+  {
+    "id": "arm-new-install-only",
+    "when": {"cpu_architecture": "arm64"},
+    "require": {"installation_nature": "new"},
+    "message": "ARM 机型仅支持新装，不支持对已有局点割接或切换",
+    "sources": [{"file": "docs/0237-安装场景说明-61880ce1.md", "heading": "组网类型介绍"}]
+  },
+  {
+    "id": "lightweight-physical-only",
+    "when": {"topology": "lightweight"},
+    "require": {"deployment_carrier": "physical"},
+    "message": "轻量化组网不涉及虚拟机场景",
+    "sources": [{"file": "docs/0237-安装场景说明-61880ce1.md", "heading": "组网类型介绍"}]
+  },
+  {
+    "id": "tool-topology-physical-only",
+    "when": {"topology": "tool"},
+    "require": {"deployment_carrier": "physical"},
+    "message": "工具组网不涉及虚拟机场景",
+    "sources": [{"file": "docs/0237-安装场景说明-61880ce1.md", "heading": "组网类型介绍"}]
+  },
+  {
+    "id": "campaign-not-on-bclinux",
+    "when": {"optional_modules": "campaign"},
+    "forbid": {"os_family": "bclinux"},
+    "message": "当前版本不支持在 BClinux 上安装 Campaign 模块",
+    "sources": [{"file": "docs/1275-可选-安装campaign模块-21c6403b.md", "heading": "（可选）安装Campaign模块"}]
+  },
+  {
+    "id": "external-fi-access-required",
+    "when": {"data_platform": "external_fi"},
+    "require": {"data_platform_access": ["admin", "om", "non_om"]},
+    "message": "外置 FI 必须明确对接账号权限，以选择 admin、OM 或非 OM 准备分支",
+    "sources": [{"file": "docs/0318-其他资源准备-对接fi无admin权限-033af0e2.md", "heading": "其他资源准备"}]
+  },
+  {
+    "id": "mysql-ssl-mode-required",
+    "when": {"database": "mysql"},
+    "require": {"database_ssl": ["enabled", "disabled"]},
+    "message": "MySQL 必须明确是否开启客户端 SSL 证书认证",
+    "sources": [{"file": "docs/0521-创建数据库-未开启客户端ssl证书认证场景-ec08a248.md", "heading": "创建数据库"}, {"file": "docs/0522-创建数据库-开启客户端ssl证书认证场景-12d088f3.md", "heading": "创建数据库"}]
+  },
+  {
+    "id": "panwei-ssl-mode-required",
+    "when": {"database": "panwei"},
+    "require": {"database_ssl": ["enabled", "disabled"]},
+    "message": "外置磐维数据库必须明确客户端 SSL 模式",
+    "sources": [{"file": "docs/0523-准备磐维数据库-f3a2b0b2.md", "heading": "准备磐维数据库"}]
+  }
+]

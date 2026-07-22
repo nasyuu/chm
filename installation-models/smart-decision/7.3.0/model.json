@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "product": "Smart Decision",
+  "version": "7.3.0",
+  "knowledge_base_hint": "smart-decision-7.3.0-agent-docs",
+  "axes": {
+    "installation_nature": {
+      "label": "安装性质",
+      "values": {"new": "全新安装", "add_on": "追加部署"}
+    },
+    "deployment_carrier": {
+      "label": "部署载体",
+      "values": {"physical": "物理机", "virtual": "虚拟机"}
+    },
+    "base_environment": {
+      "label": "现有产品环境",
+      "values": {
+        "none": "无现有产品",
+        "smart_datacube": "已有 Smart DataCube",
+        "campaign": "已有 Campaign",
+        "smart_decision": "已有 Smart Decision",
+        "wdtn": "已有 WDTN"
+      }
+    },
+    "topology": {
+      "label": "组网类型",
+      "values": {
+        "standard": "标准组网",
+        "lightweight": "轻量化组网",
+        "tool": "工具组网",
+        "datacube_add_on": "Smart DataCube 追加部署组网"
+      }
+    },
+    "hardware_provider": {
+      "label": "硬件来源",
+      "values": {"huawei": "华为硬件", "third_party": "第三方硬件", "cloud": "云平台"}
+    },
+    "os_family": {
+      "label": "操作系统",
+      "values": {"euleros": "EulerOS", "third_party": "受支持的第三方 OS", "bclinux": "BClinux"}
+    },
+    "cpu_architecture": {
+      "label": "CPU 架构",
+      "values": {"x86_64": "x86_64", "arm64": "ARM64"}
+    },
+    "data_platform": {
+      "label": "数据平台",
+      "values": {"none": "无 FI/Hadoop", "built_in_fi": "内置 FI", "external_fi": "外置 FI"}
+    },
+    "data_platform_access": {
+      "label": "FI/Hadoop 权限",
+      "values": {"admin": "admin", "om": "OM 用户", "non_om": "非 OM 用户"}
+    },
+    "database": {
+      "label": "数据库",
+      "values": {"built_in": "内置数据库", "mysql": "MySQL", "panwei": "磐维数据库"}
+    },
+    "database_ssl": {
+      "label": "数据库客户端 SSL",
+      "values": {"enabled": "开启", "disabled": "关闭"}
+    },
+    "network_mode": {
+      "label": "网络平面",
+      "values": {"multi_plane": "多平面", "single_plane": "单平面", "merged": "平面合设"}
+    },
+    "ip_stack": {
+      "label": "IP 协议栈",
+      "values": {"ipv4": "IPv4", "ipv6": "IPv6", "dual_stack": "IPv4/IPv6 双栈"}
+    },
+    "optional_modules": {
+      "label": "可选模块",
+      "values": {
+        "none": "无",
+        "campaign": "Campaign",
+        "datacube_design": "Smart DataCube 设计态",
+        "intent_model": "用户意图大模型",
+        "marketing_assistant": "营销助手",
+        "assets": "模型或数据资产"
+      }
+    }
+  }
+}

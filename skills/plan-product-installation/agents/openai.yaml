@@ -1,0 +1,4 @@
+interface:
+  display_name: "场景化安装规划"
+  short_description: "按指定部署场景生成带文档依据的安装流程、检查表和风险清单"
+  default_prompt: "使用 $plan-product-installation 为指定部署场景生成带文档依据的安装执行手册。"
